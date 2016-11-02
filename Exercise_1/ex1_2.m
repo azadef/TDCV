@@ -1,7 +1,7 @@
 
 I = imread('lena.gif');
 
-% sig = str2double(input('E                                                                   nter sigma : ','s'));
+% sig = str2double(input('Enter sigma : ','s'));
 % if isnan(sig) || fix(sig) ~= sig
 %   disp('Please enter an integer')
 % else
