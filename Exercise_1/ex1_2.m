@@ -1,3 +1,4 @@
+
 I = imread('lena.gif');
 
 % sig = str2double(input('Enter sigma : ','s'));
@@ -17,7 +18,8 @@ n = 3 * sig;
 indices = -floor(n/2):floor(n/2);
 [x,y] = meshgrid(indices, indices);
 
-mask = exp(-1/(2*sig*sig) * (x.^x + y.^y));
+a = ((x .* x) + (y .* y));
+mask = exp(-a/d);
 
 mask = mask/(2 * sig * sig * pi);
 
@@ -48,7 +50,8 @@ n = 3 * sig;
 indices = -floor(n/2):floor(n/2);
 [x,y] = meshgrid(indices, indices);
 
-mask = exp(-1/(2*sig*sig) * (x*x + y*y));
+a = ((x .* x) + (y .* y));
+mask = exp(-a/d);
 
 mask = mask/(2 * sig * sig * pi);
 
@@ -121,16 +124,19 @@ sum = 0.0;
 x = [-4,-3,-2,-1,0,1,2,3,4];
 y = [-4;-3;-2;-1;0;1;2;3;4];
 
-mask_h = exp((-1/d) * (x.^x));
+a = (x .* x);
+mask_h = exp(-a/d);
 mask_h = mask_h/sqrt(d * pi);
+% mask_h = mask_h/sum(mask_h);
 
-mask_v = exp((-1/d) * (y.^y));
+b = (y .* y);
+mask_v = exp(-b/d);
 mask_v = mask_v/sqrt(d * pi);
-
+% mask_v = mask_v/sum(mask_v);
 
 % C = zeros(size(I));
-C_1d_3 = Conv(I,mask_h,2);
-Out_3 = Conv(C_1d_3,mask_v,2);
+C_1d_3 = Conv(I,mask_h,1);
+Out_3 = Conv(C_1d_3,mask_v,1);
 
 %R = imgaussfilt(I,3);
 
