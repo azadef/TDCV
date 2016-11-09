@@ -1,0 +1,32 @@
+% these are the image parameters i used. i couldn't display the tif image
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Harris
+
+%for img4
+% n = 3;
+% s0 = 1.5;
+% k = 1.2;
+% alpha = 0.06;
+% t = 0.005;
+%t = 0;
+
+%for img1
+% n = 1;
+% s0 = 1.5;
+% k = 1.2;
+% alpha = 0.06;
+% t = 0.02;
+
+%for img3
+n = 1;
+s0 = 1.5;
+k = 1.2;
+alpha = 0.06;
+% t = 0;
+t = 0.01;
+
+img1 = 'test.pgm';
+img2= 'house.tif';
+img3 = 'sample2.jpg';
+img4 = 'checkerboard_tunnel.png';
