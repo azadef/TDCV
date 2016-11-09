@@ -8,7 +8,7 @@ function [points] = Harris_Laplace(I,n,s0,k,alpha, th, tl)
     descriptor = cell(1,n+1);
     laplacian = zeros(size(I,1),size(I,2),n+1);
     for i=0:n
-        descriptor{1,i+1} = harris_detector(I,i,s0,k,alpha,th);
+        descriptor{1,i+1} = harris_det(I,i,s0,k,alpha,th);
         s_n = s0 * k^i;
         % L(x,s) = G(s) * I(x) , x = (x,y)
         [mask_x, mask_y] = G_1D(s_n);
