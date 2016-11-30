@@ -102,7 +102,7 @@ function [px, py] = getTreeValue(J,x,y,trees)
     
 end
 function out = featureTest(J,x,x0,x1,y,y0,y1,z0,z1,s,t)
-    out = b(J,x,x0,y,y0,2-z0,s) - b(J,x,x1,y,y1,2-z1,s) < t;
+    out = b(J,x,x0,y,y0,z0,s) - b(J,x,x1,y,y1,z1,s) < t;
 end
 function out = b(J,x,xi,y,yi,z,s)
     out = (J(x+xi+s,y+yi+s,z) - J(x+xi-s,y+yi+s,z) - ...
@@ -110,11 +110,14 @@ function out = b(J,x,xi,y,yi,z,s)
 end
 
 function rgb = colorChannelAssignment(rgb)
-if (rgb == 0)
-    rgb = 3;
-elseif (rgb == 1)
-    rgb = 2;
+u = size(rgb,1);
+for i = 1:u
+if (rgb(u,1) == 0)
+    rgb(u,1) = 3;
+elseif (rgb(u,1) == 1)
+    rgb(u,1) = 2;
 else
-    rgb = 1;    
+    rgb(u,1) = 1;    
+end
 end
 end
