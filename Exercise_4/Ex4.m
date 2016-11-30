@@ -112,12 +112,12 @@ end
 function rgb = colorChannelAssignment(rgb)
 u = size(rgb,1);
 for i = 1:u
-if (rgb(u,1) == 0)
-    rgb(u,1) = 3;
-elseif (rgb(u,1) == 1)
-    rgb(u,1) = 2;
+if (rgb(i,1) == 0)
+    rgb(i,1) = 3;
+elseif (rgb(i,1) == 1)
+    rgb(i,1) = 2;
 else
-    rgb(u,1) = 1;    
+    rgb(i,1) = 1;    
 end
 end
 end
