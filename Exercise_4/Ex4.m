@@ -42,10 +42,10 @@ for n = 0:numberOfTree-1
     trees{n+1,2} = leafs;
 end
 
-%% Get the Integral Image
+%Get the Integral Image
 
-Y_s = size(img, 1);
-X_s = size(img, 2);
+Y_s = size(I, 1);
+X_s = size(I, 2);
 
 % Trees = cell(10,1);
 heat_map = zeros(Y_s, X_s);
@@ -54,19 +54,55 @@ J = integralIm(I);
 
 for i=1:Y_s
     for j=1:X_s
-        [px, py] = getTreeValue(J,i,j);
+        [px, py] = getTreeValue(J,i,j,trees);
         if px >= 1 && px <= X && py >= 1 && py <= Y
             heat_map(py, px) = heat_map(py, px) + 1;
         end
     end
 end
 
-function [px, py] = getTreeValue(J,x,y)
+function [px, py] = getTreeValue(J,x,y,trees)
     %for each node in tree if featureTest true go left, if false go right
     %until you reach a leaf
+    for n = 1:10
+        temp = trees{n,1};
+        row = temp(1,:);
+        cL = 19;
+        cR = 19;
+        while ((cL >=1) || (cR >=1))
+        i= row(1,1);
+        cL = row(1,2);
+        cR = row(1,3);
+        t = row(1,4);
+        x0 = row(1,5);
+        y0 = row(1,6);
+        z0 = row(1,7);
+        x1 = row(1,8);
+        y1 = row(1,9);
+        z1 = row(1,10);
+        s = row(1,11);
+        th_result = featureTest(J,x,x0,x1,y,y0,y1,z0,z1,s,t);
+        if (th_result==1)
+            row = temp(cL,:);
+        else
+            row = temp(cR,:);
+        end
+        end
+        l = trees{n,2};
+        if(cL < 1)
+            row =  l(abs(cL),:);
+            px = row(1,2);
+            py = row(1,3);
+        elseif (cR < 1)
+            row =  l(abs(cR),:);
+            px = row(1,2);
+            py = row(1,3);
+        end
+    end
+    
 end
 function out = featureTest(J,x,x0,x1,y,y0,y1,z0,z1,s,t)
-    out = b(J,x,x0,y,y0,2-z0,s) - b(J,x,x1,y,y1,2-z1,s) < t
+    out = b(J,x,x0,y,y0,2-z0,s) - b(J,x,x1,y,y1,2-z1,s) < t;
 end
 function out = b(J,x,xi,y,yi,z,s)
     out = (J(x+xi+s,y+yi+s,z) - J(x+xi-s,y+yi+s,z) - ...
