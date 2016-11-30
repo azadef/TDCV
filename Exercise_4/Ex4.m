@@ -1,6 +1,7 @@
 close all;
 clear;
 
+I = double(imread('2007_000032.jpg'));
 numberOfTree = 10;
 trees = cell(numberOfTree, 2);
 
@@ -41,21 +42,12 @@ for n = 0:numberOfTree-1
     trees{n+1,2} = leafs;
 end
 
-function rgb = colorChannelAssignment(rgb)
-if (rgb == 0)
-    rgb = 2;
-end
-if (rgb == 0)
-    rgb = 0;
-end
-end
-
 %% Get the Integral Image
-I = double(imread('Ex04Files/2007_000032.jpg'));
+
 Y_s = size(img, 1);
 X_s = size(img, 2);
 
-Trees = cell(10,1);
+% Trees = cell(10,1);
 heat_map = zeros(Y_s, X_s);
 
 J = integralIm(I);
@@ -79,4 +71,14 @@ end
 function out = b(J,x,xi,y,yi,z,s)
     out = (J(x+xi+s,y+yi+s,z) - J(x+xi-s,y+yi+s,z) - ...
     J(x+xi+s, y+yi-s,z) - J(x+xi-s, y+yi-s,z))/(1+2*s)^2;
+end
+
+function rgb = colorChannelAssignment(rgb)
+if (rgb == 0)
+    rgb = 3;
+elseif (rgb == 1)
+    rgb = 2;
+else
+    rgb = 1;    
+end
 end
