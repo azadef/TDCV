@@ -1,14 +1,15 @@
 close all;
 clear;
 
-I = double(imread('2007_000032.jpg'));
+I = double(imread('Ex04Files/2007_000032.jpg'));
+I = padarray(I,[500 500]);
 numberOfTree = 10;
 trees = cell(numberOfTree, 2);
 
 for n = 0:numberOfTree-1
     
     %reading tree files
-    filename = sprintf('Tree%d.txt', n);
+    filename = sprintf('Ex04Files/Tree%d.txt', n);
     file = fopen(filename);
     
     %storing number of nodes
@@ -81,7 +82,7 @@ function [px, py] = getTreeValue(J,x,y,trees)
         y1 = row(1,9);
         z1 = row(1,10);
         s = row(1,11);
-        th_result = featureTest(J,x,x0,x1,y,y0,y1,z0,z1,s,t);
+        th_result = featureTest(J,x+500,x0,x1,y+500,y0,y1,z0,z1,s,t);
         if (th_result==1)
             row = temp(cL,:);
         else
