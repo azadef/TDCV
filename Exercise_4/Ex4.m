@@ -63,7 +63,7 @@ for i=1+500:Y_s-500
             row = temp(1,:);
             cL = 19;
             cR = 19;
-            while ((cL >=1) || (cR >=1))
+            while ((cL >=1) && (cR >=1))
             q = row(1,1);
             cL = row(1,2);
             cR = row(1,3);
