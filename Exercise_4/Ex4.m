@@ -1,7 +1,7 @@
 close all;
 clear;
 
-I = double(imread('Ex04Files/2007_000032.jpg'));
+I = double(imread('2007_000032.jpg'));
 I = padarray(I,[500 500]);
 numberOfTree = 10;
 trees = cell(numberOfTree, 2);
@@ -53,48 +53,14 @@ heat_map = zeros(Y_s, X_s);
 
 J = integralIm(I);
 
-for i=1+500:Y_s-500
-    disp([i Y_s]);
-    for j=1+500:X_s-500
-        disp([j Y_s]);
-        %[px, py] = getTreeValue(J,i,j,trees);
-        for n = 1:10
-            temp = trees{n,1};
-            row = temp(1,:);
-            cL = 19;
-            cR = 19;
-            while ((cL >=1) && (cR >=1))
-            q = row(1,1);
-            cL = row(1,2);
-            cR = row(1,3);
-            t = row(1,4);
-            x0 = row(1,5);
-            y0 = row(1,6);
-            z0 = row(1,7);
-            x1 = row(1,8);
-            y1 = row(1,9);
-            z1 = row(1,10);
-            s = row(1,11);
-            %th_result = featureTest(J,x+500,x0,x1,y+500,y0,y1,z0,z1,s,t);
-            th_result = b(J,i,x0,j,y0,z0,s) - b(J,i,x1,j,y1,z1,s) < t;
-            if (th_result==1)
-                row = temp(cL,:);
-            else
-                row = temp(cR,:);
-            end
-            end
-            l = trees{n,2};
-            if(cL < 1)
-                row =  l(abs(cL),:);
-                px = row(1,2);
-                py = row(1,3);
-            elseif (cR < 1)
-                row =  l(abs(cR),:);
-                px = row(1,2);
-                py = row(1,3);
-            end
-        end
-        if px >= 1 && px <= X && py >= 1 && py <= Y
+for i=1:Y_s
+    for j=1:X_s
+        [px, py] = getTreeValue(J,i,j,trees);
+        
+        px = round(px + i);
+        py = round(py + j);
+        
+        if px >= 1 && px <= X_s && py >= 1 && py <= Y_s
             heat_map(py, px) = heat_map(py, px) + 1;
         end
     end
@@ -108,7 +74,7 @@ function [px, py] = getTreeValue(J,x,y,trees)
         row = temp(1,:);
         cL = 19;
         cR = 19;
-        while ((cL >=1) || (cR >=1))
+        while ((cL >=1) && (cR >=1))
         i= row(1,1);
         cL = row(1,2);
         cR = row(1,3);
@@ -120,21 +86,25 @@ function [px, py] = getTreeValue(J,x,y,trees)
         y1 = row(1,9);
         z1 = row(1,10);
         s = row(1,11);
-        %th_result = featureTest(J,x+500,x0,x1,y+500,y0,y1,z0,z1,s,t);
-        th_result = b(J,x,x0,y,y0,z0,s) - b(J,x,x1,y,y1,z1,s) < t;
+       
+%         th_result = featureTest(J,x+610,x0,x1,y+610,y0,y1,z0,z1,s,t);
+        th_result = featureTest(J,x+500,x0,x1,y+500,y0,y1,z0,z1,s,t);
+                                                    
         if (th_result==1)
-            row = temp(cL,:);
+            row = temp(temp(:,1)==cL,:);
         else
-            row = temp(cR,:);
+            row = temp(temp(:,1)==cR,:);
         end
         end
         l = trees{n,2};
         if(cL < 1)
-            row =  l(abs(cL),:);
+            cL = abs(cL);
+            row =  l(l(:,1)==cL,:);
             px = row(1,2);
             py = row(1,3);
         elseif (cR < 1)
-            row =  l(abs(cR),:);
+            cR = abs(cR);
+            row =  l(l(:,1)==cR,:);
             px = row(1,2);
             py = row(1,3);
         end
@@ -145,8 +115,25 @@ function out = featureTest(J,x,x0,x1,y,y0,y1,z0,z1,s,t)
     out = b(J,x,x0,y,y0,z0,s) - b(J,x,x1,y,y1,z1,s) < t;
 end
 function out = b(J,x,xi,y,yi,z,s)
-    out = (J(x+xi+s,y+yi+s,z) - J(x+xi-s,y+yi+s,z) - ...
-    J(x+xi+s, y+yi-s,z) - J(x+xi-s, y+yi-s,z))/(1+2*s)^2;
+    o = floor(s/2);
+    
+    I = double(imread('2007_000032.jpg'));
+    Y = size(I, 1);
+    X = size(I, 2);
+    
+    x = x + xi;
+    y = y + yi;
+    
+    x1 = min(max(x-o, 1), X);
+    y1 = min(max(y-o, 1), Y);
+    x2 = min(max(x+o, 1), X);
+    y2 = min(max(y+o, 1), Y);
+    
+    out = (J(x2,y2,z) - J(x1,y2,z) - ...
+    J(x2, y1,z) + J(x1, y1,z));
+    
+%     out = (J(x+xi+s,y+yi+s,z) - J(x+xi-s,y+yi+s,z) - ...
+%     J(x+xi+s, y+yi-s,z) - J(x+xi-s, y+yi-s,z))/(1+2*s)^2;
 end
 
 function rgb = colorChannelAssignment(rgb)
