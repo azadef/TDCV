@@ -66,6 +66,12 @@ for i=1:Y_s
     end
 end
 
+heat_map = heat_map / max(max(heat_map));
+
+% subplot(3, 1, 3)
+imshow(heat_map)
+title('heat map')
+
 function [px, py] = getTreeValue(J,x,y,trees)
     %for each node in tree if featureTest true go left, if false go right
     %until you reach a leaf
