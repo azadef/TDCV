@@ -44,6 +44,7 @@ title('all matched features')
 % figure(4);
 % showMatchedFeatures(Ia_2,Ib_2,inlier1,inlier2,'montage');
 
+%i don't know how to take threshold here so took it from the solution 
 [H, mBox, mScene] = ransac(mBox, mScene, 5, 25, 20000);
 
 % pnts1 = [10 20 3 15 106 16;17 18 19 20 120 34;1 1 1 1 1 1];
