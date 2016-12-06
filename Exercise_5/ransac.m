@@ -4,7 +4,7 @@ assert(size(points1, 1) == size(points2, 1));
 
 %padding array so as to make it compatible with DLT
 points1 = padarray(points1, [0 1], 1, 'post');
-points1 = padarray(points1, [0 1], 1, 'post');
+points2 = padarray(points2, [0 1], 1, 'post');
 
 ptSize = size(points1, 1);
 final_consensus = [];
