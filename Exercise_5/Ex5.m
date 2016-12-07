@@ -45,9 +45,16 @@ title('all matched features')
 % showMatchedFeatures(Ia_2,Ib_2,inlier1,inlier2,'montage');
 
 [H, mBox, mScene] = ransac(mBox, mScene, 180, 25, 20000)
+% [H, mBox, mScene] = adaptiveRansac(matched_box, matched_scene, 250)
 figure(4);
-showMatchedFeatures(Ia_2, Ib_2, mBox, mBox, 'montage');
+showMatchedFeatures(Ia_2, Ib_2, mBox, mScene, 'montage');
 title('consensus features')
+
+[H, mBox, mScene] = adaptiveRansac(matched_box, matched_scene, 250)
+figure(5);
+showMatchedFeatures(Ia_2, Ib_2, mBox, mScene, 'montage');
+title('consensus features robust')
+
 
 % pnts1 = [10 20 3 15 106 16;17 18 19 20 120 34;1 1 1 1 1 1];
 % pnts2 = [17 18 19 20 120 34;10 20 3 15 106 16;1 1 1 1 1 1];
