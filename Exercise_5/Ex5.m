@@ -6,9 +6,8 @@ run('D:\MS Informatics\3rd Semester\Tracking and Detection\Exercises\3rd Exercis
 
 Ia_2 = single(imread('scene.pgm'))/255;
 Ib_2 = single(imread('box.pgm'))/255;
-
-% Ia_2 = single(rgb2gray('scene.pgm')) ;
-% Ib_2 = single(rgb2gray('box.pgm')) ;
+% Ia_2 = single(imread('ex05/scene.pgm'))/255;
+% Ib_2 = single(imread('ex05/box.pgm'))/255;
 
 [fa, da] = vl_sift(Ia_2) ;
 [fb, db] = vl_sift(Ib_2) ;
@@ -44,7 +43,7 @@ title('all matched features')
 % figure(4);
 % showMatchedFeatures(Ia_2,Ib_2,inlier1,inlier2,'montage');
 
-[H, mBox, mScene] = ransac(mBox, mScene, 180, 25, 20000)
+[H, mBox, mScene] = ransac(mBox, mScene, 50, 25, 20000)
 % [H, mBox, mScene] = adaptiveRansac(matched_box, matched_scene, 250)
 figure(4);
 showMatchedFeatures(Ia_2, Ib_2, mBox, mScene, 'montage');
@@ -55,9 +54,6 @@ figure(5);
 showMatchedFeatures(Ia_2, Ib_2, mBox, mScene, 'montage');
 title('consensus features robust')
 
-
-% pnts1 = [10 20 3 15 106 16;17 18 19 20 120 34;1 1 1 1 1 1];
-% pnts2 = [17 18 19 20 120 34;10 20 3 15 106 16;1 1 1 1 1 1];
-% d = DLT(pnts1,pnts2);
-% disp(d);
+I3 = imwarp(Ib_2,projective2d(H'));
+showMatchedFeatures(Ia_2, I3, mBox, mScene, 'blend');
 
