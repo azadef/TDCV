@@ -1,12 +1,13 @@
-function [finalH, p1, p2] = ransac(points1, points2, t, T, N)
+function [finalH, finalB, finalS] = ransac(points1, points2, t, T, N)
 
+ptSize = size(points1, 1);
 assert(size(points1, 1) == size(points2, 1));
 
 %padding array so as to make it compatible with DLT
 points1 = padarray(points1, [0 1], 1, 'post');
 points2 = padarray(points2, [0 1], 1, 'post');
 
-ptSize = size(points1, 1);
+
 final_consensus = [];
 cSize = 0;
 
@@ -18,24 +19,44 @@ for n = 1:N
     sample1 = points1(sample, :);
     sample2 = points2(sample, :);
     
-    H = DLT(sample1', sample2');
+%     H = DLT(sample1', sample2');
+    H = DLT_check(sample1, sample2);
     
     %distance calculation
     % Calculate, in both directions, the transfered points    
-    Hp1    = H*points1;
-    invHp2 = H\points2;
+%     Hp1    = H*sample1';
+%     invHp2 = H\sample2';
+%     
+%     % Normalise so that the homogeneous scale parameter for all coordinates
+%     % is 1.
+%     
+%     p1     = normalize(sample1);
+%     p2     = normalize(sample2);     
+%     Hp1    = normalize(Hp1);
+%     invHp2 = normalize(invHp2); 
+%     d2 = sum((p1-invHp2).^2)  + sum((p2-Hp1).^2);
     
-    % Normalise so that the homogeneous scale parameter for all coordinates
-    % is 1.
+%     X2 = sample2';
+%     X2_ = H*sample1' ;
+%     du = X2_(1,:)./X2_(3,:) - X2(1,:)./X2(3,:) ;
+%     dv = X2_(2,:)./X2_(3,:) - X2(2,:)./X2(3,:) ;
+%     d2 = (du.*du + dv.*dv);
+%     d2 = sqrt(d2);
     
-    p1     = normalize(points1);
-    p2     = normalize(points2);     
-    Hp1    = normalize(Hp1);
-    invHp2 = normalize(invHp2); 
+    %	Project Point1 to Point3 using H, then calcultate the distances between
+    %	Point2 and Point3
+%     p3 = (points1)*H';
+%     p3 = p3(:,1:2);
+%     p2 = points2(:,1:2);
+%     d2 = p2 - p3;
+%     d2 = sum(d2.^2, 2);
     
-    d2 = sum((p1-invHp2).^2)  + sum((p2-Hp1).^2);
-    consensus = find(abs(d2) < t); 
-    countInliers = size(consensus);
+    
+    d2 = distance(points1, points2, H);
+    mean(sqrt(d2))
+%     consensusLog = d2 < t;
+    consensus = d2 < t; 
+    countInliers = sum(consensus);
     
     %If the size of Si (the number of inliers) is greater than some threshold T, re-estimate
     %the model using all the points in Si and terminate.
@@ -49,11 +70,23 @@ for n = 1:N
            final_consensus = consensus;
     end
        
+end
     %After N trials the largest consensus set Si is selected, and the model is re-estimated
     %using all the points in the subset Si.
     [finalH, finalB, finalS] = calculate_final(points1, points2, final_consensus);
     
+
 end
 
-%calculate_final implementation
-%to-do
+%calculate final implementation
+function [H, B, S] = calculate_final(points1, points2, final_consensus)
+
+    B = points1(final_consensus, :);
+    S = points2(final_consensus, :);
+    H = DLT_check(B, S);
+    
+    B = B(:,1:2);
+
+    S = S(:,1:2);
+
+end
