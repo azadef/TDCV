@@ -44,7 +44,7 @@ title('all matched features')
 % figure(4);
 % showMatchedFeatures(Ia_2,Ib_2,inlier1,inlier2,'montage');
 
-[H, mBox, mScene] = ransac(mBox, mScene, 5, 25, 20000)
+[H, mBox, mScene] = ransac(mBox, mScene, 180, 25, 20000)
 figure(4);
 showMatchedFeatures(Ia_2, Ib_2, mBox, mBox, 'montage');
 title('consensus features')
