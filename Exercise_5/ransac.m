@@ -51,11 +51,21 @@ for n = 1:N
 %     d2 = p2 - p3;
 %     d2 = sum(d2.^2, 2);
     
+
+%compute putatitve correspondences
+S1p = points1*H';
+S1pn = S1p./repmat(S1p(:,3),1,3);
+
+%compute distances
+ds = sqrt(sum(((points2-S1pn).^2),2));
+
+dts = ds<t;
+consensus = dts;
     
-    d2 = distance(points1, points2, H);
-    mean(sqrt(d2))
-%     consensusLog = d2 < t;
-    consensus = d2 < t; 
+%     d2 = distance(points1, points2, H);
+%     mean(sqrt(d2))
+% %     consensusLog = d2 < t;
+%     consensus = d2 < t; 
     countInliers = sum(consensus);
     
     %If the size of Si (the number of inliers) is greater than some threshold T, re-estimate
