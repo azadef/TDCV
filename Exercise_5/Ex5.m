@@ -4,8 +4,8 @@ clc;
 run('D:\MS Informatics\3rd Semester\Tracking and Detection\Exercises\3rd Exercise/VLFEATROOT/toolbox/vl_setup');
 run('D:\MS Informatics\3rd Semester\Tracking and Detection\Exercises\3rd Exercise/matconvnet/matlab/vl_setupnn');
 
-Ia_2 = single(imread('scene.pgm'));
-Ib_2 = single(imread('box.pgm'));
+Ia_2 = single(imread('scene.pgm'))/255;
+Ib_2 = single(imread('box.pgm'))/255;
 
 % Ia_2 = single(rgb2gray('scene.pgm')) ;
 % Ib_2 = single(rgb2gray('box.pgm')) ;
@@ -44,8 +44,10 @@ title('all matched features')
 % figure(4);
 % showMatchedFeatures(Ia_2,Ib_2,inlier1,inlier2,'montage');
 
-%i don't know how to take threshold here so took it from the solution 
-[H, mBox, mScene] = ransac(mBox, mScene, 5, 25, 20000);
+[H, mBox, mScene] = ransac(mBox, mScene, 5, 25, 20000)
+figure(4);
+showMatchedFeatures(Ia_2, Ib_2, mBox, mBox, 'montage');
+title('consensus features')
 
 % pnts1 = [10 20 3 15 106 16;17 18 19 20 120 34;1 1 1 1 1 1];
 % pnts2 = [17 18 19 20 120 34;10 20 3 15 106 16;1 1 1 1 1 1];
