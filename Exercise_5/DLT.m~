@@ -1,0 +1,13 @@
+function H = DLT(pnts1,pnts2)
+    n = size(pnts1,1);
+    Ai = cell(n,1);
+    A = zeros(2*n,9);
+    for i=1:n
+      Ai = [[0,0,0,-pnts2(i,3)*pnts1(i,:),pnts2(i,2)*pnts1(i,:)],...
+          [pnts2(i,3)*pnts1(i,:),0,0,0,-pnts2(i,1)*pnts1(i,:)]];
+      A(2*i-1:2*i,:) = A
+    end
+    [~,~,V] = svd(A);
+    h = V(:,end);
+    H = reshape(h,3,3)';
+end

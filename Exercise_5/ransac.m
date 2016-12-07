@@ -10,7 +10,9 @@ points2 = padarray(points2, [0 1], 1, 'post');
 
 final_consensus = [];
 cSize = 0;
-
+H = cell(N,1);
+%ok = cell(N,1);
+%score = cell(N,1);
 for n = 1:N
 %     sampleSize = 4 + (ptSize - 4).*rand(100,1);
     sampleSize = randi([4 ptSize]);
@@ -19,9 +21,8 @@ for n = 1:N
     sample1 = points1(sample, :);
     sample2 = points2(sample, :);
     
-%     H = DLT(sample1', sample2');
-    H = DLT_check(sample1, sample2);
-    
+    %H = DLT_check(sample1, sample2);
+    H = DLT(sample1,sample2);
     %distance calculation
     % Calculate, in both directions, the transfered points    
 %     Hp1    = H*sample1';
@@ -93,7 +94,8 @@ function [H, B, S] = calculate_final(points1, points2, final_consensus)
 
     B = points1(final_consensus, :);
     S = points2(final_consensus, :);
-    H = DLT_check(B, S);
+    %H = DLT_check(B, S);
+    H = DLT(B, S);
     
     B = B(:,1:2);
 
