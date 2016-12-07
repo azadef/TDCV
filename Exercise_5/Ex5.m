@@ -50,7 +50,7 @@ figure(4);
 showMatchedFeatures(Ia_2, Ib_2, mBox, mScene, 'montage');
 title('consensus features')
 
-[H, mBox, mScene] = adaptiveRansac(matched_box, matched_scene, 250)
+[H, mBox, mScene] = adaptiveRansac(mBox, mScene, 200)
 figure(5);
 showMatchedFeatures(Ia_2, Ib_2, mBox, mScene, 'montage');
 title('consensus features robust')
