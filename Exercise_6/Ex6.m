@@ -1,6 +1,3 @@
-close all;
-clc;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Exercise 1
 
@@ -8,10 +5,7 @@ close all;
 clc;
 
 run('D:\MS Informatics\3rd Semester\Tracking and Detection\Exercises\3rd Exercise/VLFEATROOT/toolbox/vl_setup');
-run('D:\MS Informatics\3rd Semester\Tracking and Detection\Exercises\3rd Exercise/matconvnet/matlab/vl_setupnn');
 
-% Ia_2 = single(imread('img_sequence\scene.pgm'))/255;
-% Ib_2 = single(imread('box.pgm'))/255;
 Ia_2 = single(rgb2gray(imread('img_sequence/0026.png')))/255;
 Ib_2 = single(rgb2gray(imread('img_sequence/0026.png')))/255;
 
