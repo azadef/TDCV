@@ -6,8 +6,8 @@ clc;
 
 run('D:\MS Informatics\3rd Semester\Tracking and Detection\Exercises\3rd Exercise/VLFEATROOT/toolbox/vl_setup');
 
-Ia_2 = single(rgb2gray(imread('img_sequence/0026.png')))/255;
-Ib_2 = single(rgb2gray(imread('img_sequence/0026.png')))/255;
+Ia_2 = single(rgb2gray(imread('img_sequence/0000.png')))/255;
+Ib_2 = single(rgb2gray(imread('img_sequence/0000.png')))/255;
 
 [fa, da] = vl_sift(Ia_2) ;
 [fb, db] = vl_sift(Ib_2) ;
@@ -83,7 +83,7 @@ options = optimset('MaxFunEvals', 1e6, 'MaxIter', 1e4, 'TolX', 1e-14, 'TolFun', 
 
 for n = 1:n  
   X = horzcat(R,T);
-  foo = @(X) energy(X(:,1:3), X(:,4), A, M, m);
+  foo = @(X) energy(X(:,1:3), X(:,4), A, Mi0, mT{n});
   fprintf('Frame %02d', n);
   [X, e] = fminsearch(foo, X, options);
   fprintf('\t energy = %02f\n', e);
