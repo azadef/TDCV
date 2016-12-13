@@ -83,7 +83,7 @@ options = optimset('MaxFunEvals', 1e6, 'MaxIter', 1e4, 'TolX', 1e-14, 'TolFun', 
 
 for n = 1:n  
   X = horzcat(R,T);
-  foo = @(X) energy(X(:,1:3), X(:,4), A, Mi0, mT{n});
+  foo = @(X) Energy(X(:,1:3), X(:,4), A, Mi0, mT{n});
   fprintf('Frame %02d', n);
   [X, e] = fminsearch(foo, X, options);
   fprintf('\t energy = %02f\n', e);
