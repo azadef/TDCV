@@ -72,3 +72,36 @@ for i=1:n
     out_result{i} = showMatchedFeatures(images{1}, images{i}, m0{i}, mT{i}, 'montage');
     saveas(gcf,[out_dir img_dir(i).name]);
 end
+
+T= zeros(3, 1);
+R = [1,1,1;1,1,1;1,1,1];
+% X = horzcat(R,T);
+
+N= 44; %Number of image frames except the first
+
+options = optimset('MaxFunEvals', 1e6, 'MaxIter', 1e4, 'TolX', 1e-14, 'TolFun', 1);
+
+for n = 1:n  
+  X = horzcat(R,T);
+  foo = @(X) energy(X(:,1:3), X(:,4), A, M, m);
+  fprintf('Frame %02d', n);
+  [X, e] = fminsearch(foo, X, options);
+  fprintf('\t energy = %02f\n', e);
+
+  T_last = T;
+  T = X(:,4);
+  R = X(:,1:3);
+  theta = norm(R);
+  if theta > 2 * pi
+        R = (1 - 2 * pi / theta) * R;
+  end
+    
+  plotCamera3D(T, T_last,n);
+end
+
+function plotCamera3D(T,T_last,n)
+    text(T(1), T(2), T(3), num2str(n));
+    if numel(T_last) == 3
+        plot3([T_last(1) T(1)], [T_last(2) T(2)], [T_last(3) T(3)])
+    end
+end
