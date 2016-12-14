@@ -4,7 +4,7 @@
 close all;
 clc;
 
-run('D:\MS Informatics\3rd Semester\Tracking and Detection\Exercises\3rd Exercise/VLFEATROOT/toolbox/vl_setup');
+%run('D:\MS Informatics\3rd Semester\Tracking and Detection\Exercises\3rd Exercise/VLFEATROOT/toolbox/vl_setup');
 
 Ia_2 = single(rgb2gray(imread('img_sequence/0000.png')))/255;
 Ib_2 = single(rgb2gray(imread('img_sequence/0000.png')))/255;
@@ -52,7 +52,7 @@ Mi0 = Mi0';
 img_dir = dir('img_sequence/*.png');
 out_dir = 'results/';
 n = size(img_dir,1);
-%n = 3;
+%n = 2;
 images = cell(n,1);
 for i=1:n
    images{i} = single(rgb2gray(imread(['img_sequence/' img_dir(i).name]))); 
@@ -61,7 +61,7 @@ end
 out_result = cell(n,1);
 m0 = cell(n,1);
 mT = cell(n,1);
-[fa, da] = vl_sift(images{1}) ;
+%[fa, da] = vl_sift(images{1}) ;
 for i=1:n
     [fb, db] = vl_sift(images{i}) ;
     % This should be replaced by the points found in part1 
@@ -81,10 +81,12 @@ N= 44; %Number of image frames except the first
 
 options = optimset('MaxFunEvals', 1e6, 'MaxIter', 1e4, 'TolX', 1e-14, 'TolFun', 1);
 
-for n = 1:n  
+for j = 1:n  
   X = horzcat(R,T);
-  foo = @(X) Energy(X(:,1:3), X(:,4), A, Mi0, mT{n});
-  fprintf('Frame %02d', n);
+  m0{j} = [m0{j}(:,1:2), ones(size(m0{j},1),1)];
+  mT{j} = [mT{j}(:,1:2), ones(size(mT{j},1),1)];
+  foo = @(X) Energy(X(:,1:3), X(:,4), A, m0{j}, mT{j});
+  fprintf('Frame %02d', j);
   [X, e] = fminsearch(foo, X, options);
   fprintf('\t energy = %02f\n', e);
 
@@ -96,7 +98,7 @@ for n = 1:n
         R = (1 - 2 * pi / theta) * R;
   end
     
-  plotCamera3D(T, T_last,n);
+  plotCamera3D(T, T_last,j);
 end
 
 function plotCamera3D(T,T_last,n)
