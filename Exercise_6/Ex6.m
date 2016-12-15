@@ -68,42 +68,66 @@ for i=1:n
     [matches, scores] = vl_ubcmatch(da, db) ;
     m0{i} = fa(1:2,matches(1,:))' ;
     mT{i} = fb(1:2,matches(2,:))' ;
-    [H, m0{i}, mT{i}] = ransac(m0{i}, mT{i}, 50, 25, 20000);
+    [H, m0{i}, mT{i}] = ransac(m0{i}, mT{i}, 80, 25, 20000);
     out_result{i} = showMatchedFeatures(images{1}, images{i}, m0{i}, mT{i}, 'montage');
     saveas(gcf,[out_dir img_dir(i).name]);
 end
 
-T= zeros(3, 1);
-R = [1,1,1;1,1,1;1,1,1];
+Rt = zeros(1,3,nr_images);
+% initial rotation is all zeros
+Rt(:,:,1) = [0, 0, 0];    
+
+% initial translation is all zeros
+Tt = zeros(1,3,45);
+Tt(:,:,1) = [0, 0, 0];
+
+% camera in world coordinates
+Ct = zeros(3,45);
+Ct(:,1) = zeros(3,1);
+
+% T= zeros(3, 1);
+% R = [1,1,1;1,1,1;1,1,1];
 % X = horzcat(R,T);
 
 N= 44; %Number of image frames except the first
 
 options = optimset('MaxFunEvals', 1e6, 'MaxIter', 1e4, 'TolX', 1e-14, 'TolFun', 1);
 
-for j = 1:n  
-  X = horzcat(R,T);
-  m0{j} = [m0{j}(:,1:2), ones(size(m0{j},1),1)];
-  mT{j} = [mT{j}(:,1:2), ones(size(mT{j},1),1)];
-  foo = @(X) Energy(X(:,1:3), X(:,4), A, m0{j}, mT{j});
-  fprintf('Frame %02d', j);
+for j = 2:n+1  
+%   X = horzcat(R,T);
+  X = [Rt(:,:,j-1),Tt(:,:,j-1)];
+  
+  m0{j-1} = [m0{j-1}(:,1:2), ones(size(m0{j-1},1),1)];
+  mT{j-1} = [mT{j-1}(:,1:2), ones(size(mT{j-1},1),1)];
+  mT{j-1} = mT{j-1}';
+  
+  M0 = m0{j-1}';
+%   M0 = vertcat(M0, ones(1,size(M0,2)));
+  M0 = A\M0;
+  M0 = vertcat(M0, ones(1,size(M0,2)));
+  
+  foo = @(X) Energy(X(1:3), X(4:end), A, M0, mT{j-1});
+  fprintf('Frame %02d', j-1);
   [X, e] = fminsearch(foo, X, options);
   fprintf('\t energy = %02f\n', e);
 
-  T_last = T;
-  T = X(:,4);
-  R = X(:,1:3);
-  theta = norm(R);
-  if theta > 2 * pi
-        R = (1 - 2 * pi / theta) * R;
-  end
+
+   estimated_Angles = X(1:3);
+   Rt(:,:,j-1) = estimated_Angles;
+   estimatedR = rotation_matrix(estimated_Angles);  
+   estimatedT = X(4:end);        
     
-  plotCamera3D(T, T_last,j);
+    Tt(:,:,j-1) = estimatedT;
+    Ct(:,j-1) = -estimatedR'*estimatedT';
 end
 
-function plotCamera3D(T,T_last,n)
-    text(T(1), T(2), T(3), num2str(n));
-    if numel(T_last) == 3
-        plot3([T_last(1) T(1)], [T_last(2) T(2)], [T_last(3) T(3)])
-    end
-end
+%% draw our estimated camera-positions
+figure('Name', 'Estimated camera coordinates', 'NumberTitle', 'Off');
+plot3(Ct(1,:), Ct(2,:), Ct(3,:), 'bx-');
+hold on;
+text(Ct(1,:),Ct(2,:),Ct(3,:),num2str((0:45-1)'));
+plot3(0,0,0,'or', 'MarkerSize', 12);
+grid on;
+xlabel('X');
+ylabel('Y');
+zlabel('Z');
