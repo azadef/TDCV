@@ -60,23 +60,21 @@ classdef fc_layer < layer
             % Initialize the layers parameters W, b, dW, db, etc.
             %%% START YOUR CODE HERE %%%
             % Parameters
-            %We initialized the biases to be 0 and the weights Wij:
-            % Wij ? U[-1/sqrt(n),1/sqrt(n)]
             range = sqrt(6)/ x(4) + obj.num_filters +1; %not sure
             obj.W = -range + (2*range).*rand(x);
 			obj.b = double(zeros(x(4), 1));
 			
             % Gradients
-			% obj.dW = ..
+			obj.dW = gradient(obj.W);
 			obj.db = double(zeros(obj.num_filters, 1));
 			
             % Update (Useful for RMSProp and AdaM updates)
-			% obj.uW = ...
-			% obj.ub = ...
+			obj.uW = 0;
+			obj.ub = 0;
             
             % Average (Useful for RMSProp and AdaM updates)
-			% obj.aW = ...
-			% obj.ab = ...
+			obj.aW = mean(obj.W);
+			obj.ab = 0;
 			
             % Output
 			y = [1 1 obj.num_filters x(4)];
@@ -90,12 +88,9 @@ classdef fc_layer < layer
             % Make use of reshape and repmat to create the tensors
             %%% START YOUR CODE HERE %%%
             L = 0;
-            
-            
-            
-            
-            
-            y = obj.W.*x + reshape(repmat(obj.b,size(x,1),size(x,2)),size(x));
+            %squeeze(reshape(repmat(obj.b,size(x,1),size(x,2)),size(x)))
+            t = reshape(obj.W,size(x)).*x;
+            y = t + reshape(repmat(obj.b,size(x,1),size(x,2)),size(x));
             L = 0;
             %%% END YOUR CODE HERE %%%
 		end
@@ -104,9 +99,9 @@ classdef fc_layer < layer
 		function [obj, dx] = backward(obj, dy, x)
             % Compute the gradients dx,dW and db using dy,x and W
             %%% START YOUR CODE HERE %%%
-            % dx = ...
-            % obj.dW = ...
-            % obj.db = ...
+            dx = obj.W .* dy;
+            obj.dW = x .* dy;
+            obj.db = obj.b; %sum(obj.b * dy);
             %%% END YOUR CODE HERE %%%
 		end
 		

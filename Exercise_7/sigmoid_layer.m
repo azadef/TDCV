@@ -44,9 +44,10 @@ classdef sigmoid_layer < layer
 		function [obj, y, L] = forward(obj, x)
             % Compute the average activation (A_avg), the loss (L) and the layers output (y)
             %%% START YOUR CODE HERE %%%
-            % y = ...
-            % obj.A_avg = ...
-            % L = ...
+            %dot = sum(reshape(obj.W,size(x)).*x) + reshape(repmat(obj.b,size(x,1),size(x,2)),size(x));
+            y = 1./(1 + exp(-x));
+            obj.A_avg = mean(y);
+            L = 0;
             %%% END YOUR CODE HERE %%%
 		end
 		
@@ -54,7 +55,10 @@ classdef sigmoid_layer < layer
 		function [obj, dx] = backward(obj, dy, x)
             % Compute the gradients dx using dy,x and A_avg
             %%% START YOUR CODE HERE %%%
-            % dx = ...
+            E_sparse = obj.beta * (sum(obj.alpha*log(obj.alpha/obj.A_avg) + ...
+                (1-obj.alpha) * log (1-obj.alpha/1-obj.A_avg)));
+            dx = x .* dy + E_sparse;
+            %obj.dW = x .* dy;
             %%% END YOUR CODE HERE %%%
         end
 	end

@@ -17,13 +17,13 @@ net = neural_network();
 net.layers{end+1} = fc_layer(n_hidden, [decay 0]);
 
 % Add sigmoid layer
-%net.layers{end+1} = sigmoid_layer(avg_sparsity, beta, 1);
+net.layers{end+1} = sigmoid_layer(avg_sparsity, beta, 1);
 
 %----------------------- Decompression -----------------------------%
 % Add fully connected layer with n_out neurons
 net.layers{end+1} = fc_layer(n_out, [decay 0]);
 
 % % Add sigmoid layer
-%net.layers{end+1} = sigmoid_layer();
+net.layers{end+1} = sigmoid_layer();
 
 end

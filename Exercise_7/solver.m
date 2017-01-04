@@ -108,7 +108,7 @@ classdef solver
             %%% START YOUR CODE HERE %%%
             % Batch size
             dy = y-y_gt;
-            L = sum(dy.*dy)/N;
+            L = sum(sum(dy.*dy))/2*size(y,4);
             
         
             % dy = ...
