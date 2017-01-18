@@ -1,0 +1,67 @@
+%Weakclassifier class having train, test and finding threshold functions
+classdef WeakClassifier < handle
+    properties
+        dimension
+        threshold
+        compare
+    end
+    methods
+        function error = train(obj, samples, labels, weights)
+            
+            %finding threshold for each dimension. 2 in this case
+            [thresholdRow, errorRow] = obj.findThreshold(samples(:, 1), labels, weights);
+            [thresholdCol, errorCol] = obj.findThreshold(samples(:, 2), labels, weights);
+            
+            %selecting lower error from the two dimensions
+            if errorRow < errorCol
+                error = errorRow;
+                obj.dimension = 1;
+                obj.threshold = thresholdRow;
+            else
+                error = errorCol;
+                obj.dimension = 2;
+                obj.threshold = thresholdCol;
+            end
+            
+            classification = obj.test(samples);
+            % calculating total error
+            error = sum(weights(classification ~= labels));
+        end
+        function [threshold, error] = findThreshold(obj, coords, labels, weights)
+            
+            % According to the paper to calculate threshold 
+            %e = min(S+ + (T − − S−), S− + (T + − S+))
+            %T+ = the total sum of positive example weights, 
+            %T- = the total sum of negative example weights, 
+            %S+ = the sum of positive weights below the current example and 
+            %S- = the sum of negative weights below the current example.
+            sumNeg = sum(weights(labels < 0));
+            sumPos = sum(weights) - sumNeg;
+            
+            X = [coords labels weights];
+            X = sortrows(X, 1);
+            
+            pos = cumsum(X(:, 3) .* (X(:, 2) == 1));
+            neg = cumsum(X(:, 3) .* (X(:, 2) == -1));
+            
+            e1 = pos + (sumNeg - neg);
+            e2 = neg + (sumPos - pos);
+            e = min(e1, e2);
+            index = find(e == min(e));
+            obj.compare = e1(index) < e2(index);
+            
+            % threshold and error for this iteration
+            threshold = X(index, 1);
+            error = e(index);
+        end
+        function labels = test(obj, samples)
+            if obj.compare
+                labels = samples(:, obj.dimension) > obj.threshold;
+            else
+                labels = samples(:, obj.dimension) < obj.threshold;
+            end
+            %for making result 1 or -1 instead of 0 or 1
+            labels = -1 + 2 * labels;
+        end
+    end
+end
