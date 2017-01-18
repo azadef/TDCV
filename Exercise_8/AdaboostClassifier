@@ -1,0 +1,45 @@
+classdef AdaboostClassifier < handle
+    
+    properties 
+        WkClassifier
+        Alpha
+    end
+    methods 
+        %constructor for AdaboostClassifier
+        function constructor = AdaboostClassifier(countWeakClassifier)
+            constructor.WkClassifier = cell(countWeakClassifier, 1);
+            constructor.Alpha = zeros(countWeakClassifier, 1);
+        end
+        
+        function train(constructor, xy, sign)
+            %weights initialization
+            weights = ones(size(xy,1),1);
+            for n = 1:size(constructor.WkClassifier)
+               weights = weights / sum(weights);
+               
+               %constructor for weakclassifier
+               weak_clf_obj = WeakClassifier();
+               constructor.WkClassifier{n} = weak_clf_obj;
+               err = weak_clf_obj.train(xy, sign, weights);
+               
+               % AdaBoost can then be viewed as optimizing the exponential loss
+               classification = weak_clf_obj.test(xy);
+               % αk =1/2((log 1−e)/e)
+               constructor.Alpha(n) = 0.5 * log((1-err)/err);
+               %Dk (i)= (Dk−1(i)*(e^(−αk*yi*hk(xi)))/Zk
+               weights = weights .* exp(-constructor.Alpha(n) * sign .* classification); 
+               
+            end
+            constructor.Alpha = constructor.Alpha / sum(constructor.Alpha);
+        end
+        
+        function sign = test(constructor, xy)
+            sign = zeros(size(xy, 1), 1);
+            for n = 1:numel(constructor.WkClassifier)
+                sign = sign + constructor.Alpha(n) * constructor.WkClassifier{n}.test(xy);
+            end
+            %for making result 1 or -1 instead of 0 or 1
+            sign = -1 + 2 * (sign > 0);
+        end
+    end
+end
