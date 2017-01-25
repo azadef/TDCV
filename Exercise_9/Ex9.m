@@ -1,20 +1,25 @@
 clear;
 clc;
 %% Part 1
-img_dir = dir('img_sequence/*.png');
+img_dir = dir('seq/*.pgm');
 out_dir = 'results/';
 nFrames = size(img_dir,1);
-corners = [120 220;
-           220 220;
-           220 320;
-           120 320];
-
+% corners = [120 220;   %Ex 6 dataset
+%            220 220;
+%            220 320;
+%            120 320];
+corners = [205 220; %New dataset
+           305 220;
+           305 320;
+           205 320];
+       
 updateNum = 10;
 gridSpace = 5;
 
 images = cell(nFrames,1);
 for i=1:nFrames
-   images{i} = single(rgb2gray(imread(['img_sequence/' img_dir(i).name])))/255; 
+   %images{i} = single(rgb2gray(imread(['seq/' img_dir(i).name])))/255;
+   images{i} = single(imread(['seq/' img_dir(i).name]))/255;
 end
 
 A = cell(updateNum,1);
@@ -62,5 +67,9 @@ for i=1:updateNum
     end
     A{i} =  P * I' * inv(I * I');
 end
-
-save('A.mat','A');
+A2 = zeros([size(A{1}) numel(A)]);
+for i = 1:numel(A)
+    A2(:, :, i) = A{i};
+end
+save('A2.mat', 'A2');
+%save('A.mat','A');
