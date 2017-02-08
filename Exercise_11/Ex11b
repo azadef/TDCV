@@ -1,0 +1,81 @@
+% b part
+scale = 0.25; 
+
+xx = round([133   114    25    32]* scale);
+xn = xx(1);
+yn = xx(2);
+w = xx(3);
+h = xx(4);
+
+
+img_path = 'monalisa.jpg';
+
+img = imresize(imread(img_path), scale);
+bw_img = rgb2gray(img);
+imgs = {bw_img img};
+% imgs = {img};
+
+for n = 1:numel(imgs)
+    
+    figure(n)
+    
+    img = double(imgs{n}) / 255.0;
+    template = img(yn:yn+h, xn:xn+w, :);
+    
+    s = size(img) - size(template);
+    xs = [1 s(2)];
+    ys = [1 s(1)];
+    
+    subplot(2, 1, 1)
+    hold on
+    imshow(img);
+    rectangle('Position', xx, 'EdgeColor', 'r', 'LineWidth', 2 );
+    
+    subplot(2, 1, 2)
+    hold on
+    
+    threshold = 0.01;
+    template = orientation(template, threshold);
+    gradinet_img = orientation(img, threshold);
+    
+    % calculation cos Score
+    assert(numel(xs) == numel(ys));
+    
+    if numel(xs) == 1
+        xs = [xs xs];
+        ys = [ys ys];
+    end
+    
+    score = zeros(ys(2)-ys(1)+1, xs(2)-xs(1)+1, size(gradinet_img, 3));
+    for z = 1:size(gradinet_img, 3)
+        t = template(:, :, z);
+        Ic = gradinet_img(:, :, z);
+        for x = xs(1):xs(2)
+            for y = ys(1):ys(2)
+                
+                s = size(t);
+                p = Ic(y:y+s(1)-1, x:x+s(2)-1);
+                
+                score(y - ys(1) + 1, x - xs(1) + 1, z) = cos_score(p, t);
+
+            end 
+        end
+    end
+    
+    cosScore = mean(score, 3);
+    
+    
+    a = min(cosScore(:));
+    b = max(cosScore(:));
+   
+    [yn, xn] = ind2sub(size(cosScore), find(cosScore == b));
+    imshow((cosScore - a) / (b - a));
+    rectangle('Position', [xn yn xx(3:4)], 'EdgeColor', 'm', 'LineWidth', 2 );
+    title('cos')
+    fprintf('cos diff = %f pixels\n', norm([xn yn] - xx(1:2)));
+    
+    figure(2)
+    imshow(img)
+    rectangle('Position', [xn yn xx(3:4)], 'EdgeColor', 'm', 'LineWidth', 2 );
+    
+end
